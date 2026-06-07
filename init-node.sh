@@ -14,7 +14,7 @@ install_fnm_and_config() {
 		print_log "act" "install fnm ..."
 		export FNM_BASE_URL="${GITHUB}"
 		if curl_get_file "$dl_dir/fnm.sh" https://fnm.vercel.app/install; then
-			if sh "$dl_dir/fnm.sh"; then
+			if bash "$dl_dir/fnm.sh"; then
 				print_log "suc" "install fnm by https://fnm.vercel.app/install success."
 				source "$HOME/.zshrc" 2>/dev/null || true
 				_success=1
@@ -23,7 +23,7 @@ install_fnm_and_config() {
 		fi
 
 		if [[ $_success -eq 0 ]]; then
-			if sh "$dl_dir/fnm-install.sh"; then
+			if bash "$dl_dir/fnm-install.sh"; then
 				# curl -LsSf https://fnm.vercel.app/install -o fnm-install.sh
 				print_log "suc" "install fnm by $dl_dir/fnm-install.sh success."
 				source "$HOME/.zshrc" 2>/dev/null || true
