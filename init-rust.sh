@@ -8,8 +8,8 @@ source "$cur_dir/common-script.sh"
 install_rustup_and_config() {
 	_success=0
 
-	if hash rustup 2>/dev/null; then
-		print_log "info" "rustup is existed at $(which rust) ... skip"
+	if command -v rustup >/dev/null 2>&1; then
+		print_log "info" "rustup is existed at $(which rustup) ... skip"
 	else
 		print_log "act" "install rust ..."
 		export RUSTUP_DIST_SERVER="https://mirrors.aliyun.com/rustup"
@@ -50,11 +50,11 @@ install_rustup_and_config() {
 			export RUSTUP_DIST_SERVER="https://mirrors.aliyun.com/rustup"
 			export RUSTUP_UPDATE_ROOT="https://mirrors.aliyun.com/rustup/rustup"
 		EOF
-		source "$HOME/.zshrc"
+		source "$HOME/.zshrc" 2>/dev/null || true
 	fi
 	if [[ -f "$HOME/.cargo/env" ]]; then
-		source "$HOME/.cargo/env"
-		if ! grep -qE 'source "$HOME/.cargo/env"' "$HOME/.zshrc"; then
+		source "$HOME/.cargo/env" 2>/dev/null || true
+		if ! grep -qE 'source "\$HOME/.cargo/env"' "$HOME/.zshrc"; then
 			echo 'source "$HOME/.cargo/env"' >>"$HOME/.zshrc"
 		fi
 	fi
@@ -98,25 +98,21 @@ install_rust_tool() {
 	cargo_install_tool "cargo-binstall"
 
 	cargo_binstall_tool lsd        # 替代 exa、eza、ls
+	cargo_binstall_tool bat        # 替代 cat
 	cargo_binstall_tool ripgrep    # 替代 grep
 	cargo_binstall_tool fd-find    # 替代 find
-	cargo_binstall_tool bat        # 替代 cat
-	cargo_binstall_tool hexyl      # 替代 hexdump / xxd
+	cargo_binstall_tool sd         # sed 的现代化替代品，语法更易用（尤其正则分组和替换）。
+	cargo_binstall_tool procs      # 彩色输出、按关键词过滤、多栏展示，显示进程信息比传统 ps 舒服得多。
+	cargo_binstall_tool ngrv       # (Nagare Viewer)：一个用 Rust 编写的工具，是 pv 的现代替代品，性能好且界面美观
+	cargo_binstall_tool hyperfine  # 替代 time， 用于命令行基准测试的统计工具，比time功能更强大
 	cargo_binstall_tool git-delta  # 语法高亮、行号、差异内不同部分的标记
 	cargo_binstall_tool difftastic # 替代 diff，理解代码结构（不是逐行文本比对），能显示移动的代码、树状差异等，尤其适合重构后的对比。
-	cargo_binstall_tool bottom     # 图形化的 htop
-	cargo_binstall_tool btop       # 一个资源监控器，界面美观，能展示CPU、内存、磁盘和网络的使用情况
 	cargo_binstall_tool du-dust    # 替代 du，按大小排序、树形展示，一目了然哪些目录占用空间。
-	cargo_binstall_tool procs      # 彩色输出、按关键词过滤、多栏展示，显示进程信息比传统 ps 舒服得多。
-	cargo_binstall_tool sd         # sed 的现代化替代品，语法更易用（尤其正则分组和替换）。
-	cargo_binstall_tool choose     # 按列名或列范围提取字段，比 awk/cut 更直观。
-	cargo_binstall_tool huniq      # 比 uniq -c 更快，能直接统计重复行频次。
-	cargo_binstall_tool ngrv       # (Nagare Viewer)：一个用 Rust 编写的工具，是 pv 的现代替代品，性能好且界面美观
+	cargo_binstall_tool zoxide     # 替代 z，autojump 等工具
+	cargo_binstall_tool hexyl      # 替代 hexdump / xxd
 	cargo_binstall_tool zellij     # 替代 tmux
-	cargo_binstall_tool hyperfine  # 替代 time， 用于命令行基准测试的统计工具，比time功能更强大
-	cargo_binstall_tool fzf        # 一个通用的模糊查找工具，可以作为任何列表的筛选器
 }
 
 install_rustup_and_config
-# install_rust
+install_rust
 install_rust_tool

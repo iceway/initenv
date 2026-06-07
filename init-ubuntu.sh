@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 cur_dir="$(dirname "$(readlink -f "$0")")"
 # dl_dir="$cur_dir/dl"
@@ -105,7 +105,7 @@ install_zsh_and_config() {
 		sed -ri -e 's%^#\s*ZSH_THEME="\w+"%ZSH_THEME="ys"%' "$HOME/.zshrc"
 	fi
 	for plug in tig z colored-man-pages command-not-found zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search; do
-		if ! grep -qE '^plugins=\((.*)\)' "$HOME/.zshrc" | grep -qE "${plug}"; then
+		if grep -E '^plugins=\((.*)\)' "$HOME/.zshrc" && ! grep -qE "\b${plug}\b" "$HOME/.zshrc"; then
 			sed -ri -e "s%^plugins=\((.*)\)%(\1 ${plug})%" "$HOME/.zshrc"
 		fi
 	done

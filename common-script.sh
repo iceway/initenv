@@ -1,14 +1,16 @@
 #!/bin/bash
 
-SUDO="sudo"
+set -euo pipefail
+
+readonly SUDO="sudo"
 
 # cur_dir="$(dirname "$(readlink -f "$0")")"
 # dl_dir="$cur_dir/dl"
 
-if [[ -z "${GITHUB}" ]]; then
+if [[ -z "${GITHUB:-}" ]]; then
 	export GITHUB="https://gh-proxy.org/https://github.com"
 fi
-if [[ -z "${GITHUBRAW}" ]]; then
+if [[ -z "${GITHUBRAW:-}" ]]; then
 	export GITHUBRAW="https://gh-proxy.org/https://raw.githubusercontent.com"
 fi
 
@@ -18,23 +20,23 @@ print_log() {
 	case "$1" in
 	fail)
 		shift
-		echo -e "\033[1;31m[Failure] $*\033[0m" # read
+		printf '\033[1;31m[Failure] %s\033[0m\n' "$*" # red
 		;;
 	suc)
 		shift
-		echo -e "\033[1;32m[Success] $*\033[0m" # green
+		printf '\033[1;32m[Success] %s\033[0m\n' "$*" # green
 		;;
 	act)
 		shift
-		echo -e "\033[1;33m[Action] $*\033[0m" # yellow
+		printf '\033[1;33m[Action] %s\033[0m\n' "$*" # yellow
 		;;
 	info)
 		shift
-		echo -e "\033[1;34m[Information] $*\033[0m" # blue
+		printf '\033[1;34m[Information] %s\033[0m\n' "$*" # blue
 		;;
 	*)
 		shift
-		echo -e "$*"
+		printf '%s\n' "$*"
 		;;
 	esac
 }
@@ -71,10 +73,10 @@ curl_get_file() {
 	else
 		print_log "act" "curl -fL --max-time 60 --create-dirs ${_src} -o ${_tgt}"
 		if curl -fL --max-time 60 --create-dirs "${_src}" -o "${_tgt}"; then
-			print_log "suc" "cur get ${_src} to ${_tgt} success."
+			print_log "suc" "curl get ${_src} to ${_tgt} success."
 		else
 			_ext=$?
-			print_log "fail" "cur get ${_src} to ${_tgt} failure."
+			print_log "fail" "curl get ${_src} to ${_tgt} failure."
 		fi
 	fi
 	return $_ext

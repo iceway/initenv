@@ -8,13 +8,13 @@ source "$cur_dir/common-script.sh"
 install_uv_and_config() {
 	_success=0
 
-	if hash uv 2>/dev/null; then
+	if command -v uv >/dev/null 2>&1; then
 		print_log "info" "uv is existed at $(which uv) ... skip"
 	else
 		print_log "act" "install uv ..."
 		export UV_INSTALLER_GHE_BASE_URL="${GITHUB}"
 		if curl_get_file "$dl_dir/uv.sh" https://astral.sh/uv/install.sh; then
-			if sh "$dl_dir/fnm.sh"; then
+			if sh "$dl_dir/uv.sh"; then
 				print_log "suc" "install uv by https://astral.sh/uv/install.sh success."
 				_success=1
 			fi

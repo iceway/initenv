@@ -6,7 +6,7 @@ cur_dir="$(dirname "$(readlink -f "$0")")"
 source "$cur_dir/common-script.sh"
 
 install_bun() {
-	if hash bun 2>/dev/null; then
+	if command -v bun >/dev/null 2>&1; then
 		print_log "info" "bun is existed at $(which bun) ... skip"
 	else
 		print_log "act" "install bun ..."
@@ -19,7 +19,7 @@ install_bun() {
 }
 
 install_opencode() {
-	if hash oepncode 2>/dev/null; then
+	if command -v opencode >/dev/null 2>&1; then
 		print_log "info" "opencode is existed at $(which opencode) ... skip"
 	else
 		print_log "act" "install opencode ..."
@@ -38,43 +38,14 @@ install_opencode() {
 	git_clone_repo "$opencode_repo_dir/anthropics-skills.git" "$GITHUB/anthropics/skills"
 	ln -sf "$opencode_repo_dir/anthropics-skills.git/skills" "$opencode_skill_dir/anthropics-skills"
 
-	if ! grep -qE 'tarquinen/opencode-dcp' "$HOME/.config/opencode/opencode.json"; then
-		jq '.plugin += ["@tarquinen/opencode-dcp@latest"]' "$HOME/.config/opencode/opencode.json"
+	if ! jq -e '(.plugin // []) | index("@tarquinen/opencode-dcp@latest")' "$HOME/.config/opencode/opencode.json" > /dev/null 2>&1; then
+		jq '.plugin += ["@tarquinen/opencode-dcp@latest"]' "$HOME/.config/opencode/opencode.json" > "$HOME/.config/opencode/opencode.json.tmp" && mv "$HOME/.config/opencode/opencode.json.tmp" "$HOME/.config/opencode/opencode.json"
 	fi
-	if ! grep -qE 'superpowers' "$HOME/.config/opencode/opencode.json"; then
-		jq '.plugin += ["superpowers@git+https://github.com/obra/superpowers.git"]' "$HOME/.config/opencode/opencode.json"
+	if ! jq -e '(.plugin // []) | index("superpowers@git+https://github.com/obra/superpowers.git")' "$HOME/.config/opencode/opencode.json" > /dev/null 2>&1; then
+		jq '.plugin += ["superpowers@git+https://github.com/obra/superpowers.git"]' "$HOME/.config/opencode/opencode.json" > "$HOME/.config/opencode/opencode.json.tmp" && mv "$HOME/.config/opencode/opencode.json.tmp" "$HOME/.config/opencode/opencode.json"
 	fi
-	if ! grep -qE 'integrate.api.nvidia.com' "$HOME/.config/opencode/opencode.json"; then
-		cat <<-EOF
-			"provider": {
-				"my-nim": {
-					"npm": "@ai-sdk/openai-compatible",
-					"options": {
-					"baseURL": "https://integrate.api.nvidia.com/v1",
-					"thinking": {
-						"type": "enabled"
-					}
-					},
-					"models": {
-					"glm-5.1": {
-						"id": "z-ai/glm-5.1"
-					},
-					"kimi-2.6": {
-						"id": "moonshotai/kimi-k2.6"
-					},
-					"minimax-2.7": {
-						"id": "minimaxai/minimax-m2.7"
-					},
-					"gemma-4-31b": {
-						"id": "google/gemma-4-31b-it"
-					},
-					"qwen3.5-122b-a10b": {
-						"id": "qwen/qwen3.5-122b-a10b"
-					}
-					}
-				}
-			}
-		EOF
+	if ! jq -e '.provider.my-nim' "$HOME/.config/opencode/opencode.json" > /dev/null 2>&1; then
+		jq '.provider.my-nim = {"npm":"@ai-sdk/openai-compatible","options":{"baseURL":"https://integrate.api.nvidia.com/v1","thinking":{"type":"enabled"}},"models":{"glm-5.1":{"id":"z-ai/glm-5.1"},"kimi-2.6":{"id":"moonshotai/kimi-k2.6"},"minimax-2.7":{"id":"minimaxai/minimax-m2.7"},"gemma-4-31b":{"id":"google/gemma-4-31b-it"},"qwen3.5-122b-a10b":{"id":"qwen/qwen3.5-122b-a10b"}}}' "$HOME/.config/opencode/opencode.json" > "$HOME/.config/opencode/opencode.json.tmp" && mv "$HOME/.config/opencode/opencode.json.tmp" "$HOME/.config/opencode/opencode.json"
 	fi
 }
 
