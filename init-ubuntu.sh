@@ -28,6 +28,7 @@ install_base_pkgs() {
 	apt_install_pkgs wget
 	apt_install_pkgs curl
 	apt_install_pkgs jq
+	apt_install_pkgs pv
 
 	apt_install_pkgs tar
 	apt_install_pkgs gzip
@@ -84,8 +85,6 @@ install_common_tool_and_config() {
 	git_clone_repo "$HOME/.tmux/plugins/tmux-resurrect" "$GITHUB/tmux-plugins/tmux-resurrect"
 }
 
-curl_get_file "$HOME/.bashrc" "$GITHUBRAW/iceway/dotfiles/master/bash/bashrc"
-
 install_zsh_and_config() {
 	### zsh
 	apt_install_pkgs zsh
@@ -122,9 +121,77 @@ EOF
 	fi
 }
 
-install_base_pkgs_and_config_apt_mirror
-install_base_pkgs
-install_system_pkgs
-install_other_pkgs
-install_common_tool_and_config
-install_zsh_and_config
+config_bash() {
+	cat <<-EOF >>"$HOME/.bashrc"
+
+		################################################################################
+
+		case "\$TERM" in
+		xterm* | rxvt*)
+		    PROMPT_COMMAND='echo -ne "\033]0;\${USER}@\${HOSTNAME}: \${PWD/\$HOME/~}\007"'
+		    ;;
+		*) ;;
+		esac
+
+		HISTCONTROL=ignoreboth   # 不记录重复命令，以空格开头的命令不记录
+		HISTSIZE=10000           # 历史存储条数
+		HISTFILESIZE=20000       # 历史文件大小
+		shopt -s histappend      # 追加而非覆盖历史文件（避免多终端互相覆盖）
+		HISTTIMEFORMAT="%F %T "  # 记录命令执行的时间戳
+
+		# 启用高级补全（如果 /etc/bash_completion 存在）
+		if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+		    . /etc/bash_completion
+		fi
+
+		# man 手册彩色输出
+		export LESS_TERMCAP_mb=\$'\e[1;32m'   # 开始闪烁
+		export LESS_TERMCAP_md=\$'\e[1;32m'   # 开始粗体
+		export LESS_TERMCAP_me=\$'\e[0m'      # 结束所有模式
+		export LESS_TERMCAP_se=\$'\e[0m'      # 结束突出显示
+		export LESS_TERMCAP_so=\$'\e[01;33m'  # 开始突出显示（搜索等）
+		export LESS_TERMCAP_ue=\$'\e[0m'      # 结束下划线
+		export LESS_TERMCAP_us=\$'\e[1;4;31m' # 开始下划线
+		export MANPAGER="less -R"      # 这会让 man 调用 less -R，正确传递颜色编码。
+
+		# 把Ctrl和Capslock按键的作用互换
+		# setxkbmap -option ctrl:swapcaps
+
+		[ -f ~/.shell_aliases ] && . ~/.shell_aliases
+
+		export LANG=en_US.UTF-8 # 避免中文乱码或排序问题（根据自己需求选择）
+		# export LC_COLLATE=C   # 让 ls 按字符编码排序，数字排序更直观
+	EOF
+}
+
+case "$1" in
+pkgs)
+	install_base_pkgs_and_config_apt_mirror
+	install_base_pkgs
+	install_system_pkgs
+	install_other_pkgs
+	;;
+tool)
+	install_base_pkgs_and_config_apt_mirror
+	install_common_tool_and_config
+	;;
+zsh)
+	install_base_pkgs_and_config_apt_mirror
+	install_zsh_and_config
+	;;
+bash)
+	config_bash
+	;;
+all)
+	install_base_pkgs_and_config_apt_mirror
+	install_base_pkgs
+	install_system_pkgs
+	install_other_pkgs
+	install_common_tool_and_config
+	install_zsh_and_config
+	config_bash
+	;;
+*)
+	echo "$0 pkgs | tool | zsh | bash | all"
+	;;
+esac

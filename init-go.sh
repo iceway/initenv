@@ -40,7 +40,7 @@ install_g_and_config() {
 		if ! grep -qE 'source.*\.g/env' "$HOME/.zshrc"; then
 			cat <<-EOF >>"$HOME/.zshrc"
 				# g (go) env
-				if [[ -n $(alias g 2>/dev/null) ]]; then unalias g; fi
+				if [[ -n \$(alias g 2>/dev/null) ]]; then unalias g; fi
 				source "$HOME/.g/env"
 			EOF
 		fi
