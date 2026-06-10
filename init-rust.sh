@@ -55,7 +55,7 @@ install_rustup_and_config() {
 	if [[ -f "$HOME/.cargo/env" ]]; then
 		source "$HOME/.cargo/env" 2>/dev/null || true
 		if ! grep -qE 'source "\$HOME/.cargo/env"' "$HOME/.zshrc"; then
-			echo 'source "$HOME/.cargo/env"' >>"$HOME/.zshrc"
+			echo 'source "\$HOME/.cargo/env"' >>"$HOME/.zshrc"
 		fi
 	fi
 
@@ -111,6 +111,7 @@ install_rust_tool() {
 	cargo_binstall_tool zoxide     # 替代 z，autojump 等工具
 	cargo_binstall_tool hexyl      # 替代 hexdump / xxd
 	cargo_binstall_tool zellij     # 替代 tmux
+	cargo_binstall_tool miniserve  # 替代 python -m http.server
 }
 
 install_rustup_and_config

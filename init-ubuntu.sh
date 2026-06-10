@@ -161,6 +161,7 @@ config_bash() {
 
 		export LANG=en_US.UTF-8 # 避免中文乱码或排序问题（根据自己需求选择）
 		# export LC_COLLATE=C   # 让 ls 按字符编码排序，数字排序更直观
+
 	EOF
 }
 
