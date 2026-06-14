@@ -63,6 +63,7 @@ install_python_tools() {
 	uv_install_tool clang-format # clang-format
 	uv_install_tool cmakelang    # cmake-format, cmake-lint
 	uv_install_tool httpie
+	uv_install_tool claude-tap   # 超越 mitmproxy
 }
 
 install_uv_and_config
