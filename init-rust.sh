@@ -112,6 +112,7 @@ install_rust_tool() {
 	cargo_binstall_tool hexyl      # 替代 hexdump / xxd
 	cargo_binstall_tool zellij     # 替代 tmux
 	cargo_binstall_tool miniserve  # 替代 python -m http.server
+	cargo_binstall_tool oxipng     # png 图片压缩工具
 }
 
 install_rustup_and_config

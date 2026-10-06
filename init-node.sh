@@ -60,6 +60,7 @@ install_node_tool() {
 	npm_install_tool stylus
 	npm_install_tool autocorrect-node
 	npm_install_tool markdownlint-cli
+	npm_install_tool @officecli/officecli
 }
 
 install_bun() {
@@ -85,6 +86,7 @@ install_bun_tool() {
 	bun_install_tool stylus
 	bun_install_tool autocorrect-node
 	bun_install_tool markdownlint-cli
+	bun_install_tool @officecli/officecli
 }
 
 install_fnm_and_config
